@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Expense Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#d4efe9; --bg2:#a9c8f7; --ink:#2f4a33; --muted:#5d7a60;
+  --leaf:#5b8a5e; --surface:rgba(255,255,255,.72); --line:rgba(47,74,51,.18);
+  --danger:#b5482f; --on-leaf:#ffffff;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg1:#14282a; --bg2:#1c2a46; --ink:#e3f0e2; --muted:#9db9a0;
+    --leaf:#8fbf8f; --surface:rgba(255,255,255,.07); --line:rgba(227,240,226,.18);
+    --danger:#f08a70; --on-leaf:#14282a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg1:#14282a; --bg2:#1c2a46; --ink:#e3f0e2; --muted:#9db9a0;
+  --leaf:#8fbf8f; --surface:rgba(255,255,255,.07); --line:rgba(227,240,226,.18);
+  --danger:#f08a70; --on-leaf:#14282a;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; color:var(--ink);
+  font-family:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:linear-gradient(120deg,var(--bg1),var(--bg2)) fixed;
+}
+main{max-width:480px; margin:0 auto; padding:32px 18px 48px}
+h1{font-size:1.15rem; font-weight:800; margin:0 0 18px}
+.total{background:var(--leaf); color:var(--on-leaf); border-radius:28px 28px 28px 8px; padding:22px; margin-bottom:18px}
+.total small{display:block; font-size:.85rem; opacity:.85}
+.total output{display:block; font-size:2.8rem; font-weight:800; line-height:1.15; margin-top:4px; word-break:break-all}
+.add{display:grid; gap:10px}
+.add input{
+  font:inherit; color:var(--ink); background:var(--surface);
+  border:1.5px solid var(--line); border-radius:14px; padding:14px; width:100%;
+}
+.add input::placeholder{color:var(--muted)}
+.add button{
+  font:inherit; font-weight:600; cursor:pointer;
+  background:var(--ink); color:var(--bg1); border:0; border-radius:14px; padding:14px;
+}
+input:focus-visible,button:focus-visible{outline:3px solid var(--leaf); outline-offset:2px}
+.msg{min-height:1.2em; font-size:.85rem; color:var(--danger); margin:0}
+</style>
+</head>
+<body>
+<main>
+  <h1>Expense Tracker</h1>
+  <section class="total" aria-live="polite">
+    <small>Total Spent</small>
+    <output id="total">0</output>
+  </section>
+  <div class="add">
+    <input id="amount" type="number" inputmode="decimal" step="any" placeholder="Enter expense amount (e.g., 100)" aria-label="Expense amount">
+    <p class="msg" id="msg" role="alert"></p>
+    <button id="addBtn" type="button">Add expense</button>
+  </div>
+</main>
+<script>
+(function(){
+  var total = 0;   // the accumulator
+  var $ = function(id){ return document.getElementById(id); };
+
+  function add(){
+    var raw = $("amount").value.trim();
+    var new_expense = parseFloat(raw);
+    if (raw === "" || isNaN(new_expense)) {
+      $("msg").textContent = "Enter a number, like 100, 50 or 20.";
+      return;
+    }
+    $("msg").textContent = "";
+    total = total + new_expense;   // total = total + new_expense
+    $("total").textContent = total.toLocaleString(undefined, {maximumFractionDigits: 2});
+    $("amount").value = "";
+    $("amount").focus();
+  }
+
+  $("addBtn").addEventListener("click", add);
+  $("amount").addEventListener("keydown", function(e){ if (e.key === "Enter") add(); });
+})();
+</script>
+</body>
+</html>
